@@ -32,6 +32,7 @@ defmodule Gnat do
     ssl_opts: [],
     tls: false,
     inbox_prefix: "_INBOX.",
+    use_inbox: true
   }
 
   @request_sid 0
@@ -286,7 +287,12 @@ defmodule Gnat do
                   request_receivers: %{},
                   request_inbox_prefix: request_inbox_prefix}
 
-        state = create_request_subscription(state)
+        state = if connection_settings.use_inbox do
+          create_request_subscription(state)
+        else
+          state
+        end
+
         {:ok, state}
       {:error, reason} ->
         {:stop, reason}
