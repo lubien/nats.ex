@@ -25,6 +25,8 @@ defmodule Gnat.Handshake do
       {:tcp, ^tcp, operation} ->
         {_, [{:info, server_settings}]} = Parsec.parse(Parsec.new(), operation)
         {:ok, socket} = upgrade_connection(tcp, user_settings)
+        # client might want to use auth independently of the server asking
+        server_settings = Map.merge(server_settings, Map.take(user_settings, [:auth_required]))
         settings = negotiate_settings(server_settings, user_settings)
         :ok = send_connect(user_settings, settings, socket)
         {:ok, socket}
